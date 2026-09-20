@@ -174,12 +174,17 @@ bool PacketParser::parseTCP(const uint8_t* data, size_t len,
     
     // Data offset (upper 4 bits of byte 12) - header length in 32-bit words
     uint8_t data_offset = (tcp_data[12] >> 4) & 0x0F;
+
+    if (data_offset < 5) {
+        return false;
+    }
+
     size_t tcp_header_len = data_offset * 4;
-    
+
     // Flags (byte 13)
     parsed.tcp_flags = tcp_data[13];
-    
-    if (tcp_header_len < MIN_TCP_HEADER_LEN || len < offset + tcp_header_len) {
+
+    if (len < offset + tcp_header_len) {
         return false;
     }
     
