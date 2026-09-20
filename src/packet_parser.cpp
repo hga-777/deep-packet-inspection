@@ -108,6 +108,15 @@ bool PacketParser::parseIPv4(const uint8_t* data, size_t len,
         return false;
     }
     
+    uint16_t total_length =
+    (static_cast<uint16_t>(ip_data[2]) << 8) |
+    static_cast<uint16_t>(ip_data[3]);
+
+    if (total_length < ip_header_len ||
+        total_length > len - offset) {
+        return false;
+    }
+        
     // Parse fields
     parsed.ttl = ip_data[8];
     parsed.protocol = ip_data[9];
