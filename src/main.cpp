@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include <stdexcept>
 #include "pcap_reader.h"
 #include "packet_parser.h"
 
@@ -101,8 +102,21 @@ int main(int argc, char* argv[]) {
     int max_packets = -1;  // -1 means no limit
     
     if (argc >= 3) {
+    try {
         max_packets = std::stoi(argv[2]);
+
+        if (max_packets <= 0) {
+            std::cerr << "Error: max_packets must be greater than 0.\n";
+            return 1;
+        }
+    } catch (const std::invalid_argument&) {
+        std::cerr << "Error: max_packets must be a valid integer.\n";
+        return 1;
+    } catch (const std::out_of_range&) {
+        std::cerr << "Error: max_packets is out of range.\n";
+        return 1;
     }
+}
     
     // Open the PCAP file
     PcapReader reader;
